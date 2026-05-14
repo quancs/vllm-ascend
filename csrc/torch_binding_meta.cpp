@@ -576,14 +576,15 @@ namespace {
 // Register the meta implementations of the custom kernels for symbolic tracing, this will also
 // the custom kernel been captured into aclgraph
 TORCH_LIBRARY_IMPL_EXPAND(CONCAT(_C, _ascend), Meta, ops) {
-    //Gemma rmsnorm meta implementation
-    ops.impl("npu_gemma_rms_norm", &vllm_ascend::meta::npu_gemma_rms_norm_meta);
     // Masked input and mask meta implementation
     ops.impl("get_masked_input_and_mask", &vllm_ascend::meta::get_masked_input_and_mask_meta);
     // Bgmv expand
     ops.impl("bgmv_expand", &vllm_ascend::meta::bgmv_expand_meta);
     // Sgmv expand
     ops.impl("sgmv_expand", &vllm_ascend::meta::sgmv_expand_meta);
+#ifndef ASCEND_PLATFORM_950
+    // Gemma RmsNorm
+    ops.impl("npu_gemma_rms_norm", &vllm_ascend::meta::npu_gemma_rms_norm_meta);
     // MLA preprocess
     ops.impl("mla_preprocess", &vllm_ascend::meta::mla_preprocess);
     // grouped_matmul_swiglu_quant meta implementation
@@ -604,8 +605,6 @@ TORCH_LIBRARY_IMPL_EXPAND(CONCAT(_C, _ascend), Meta, ops) {
     ops.impl("matmul_allreduce_add_rmsnorm", &vllm_ascend::meta::matmul_allreduce_add_rmsnorm_meta);
     // moe_init_routing_custom
     ops.impl("npu_moe_init_routing_custom", &vllm_ascend::meta::npu_moe_init_routing_custom_meta);
-    // Moe_gating_top_k
-    ops.impl("moe_gating_top_k", &vllm_ascend::meta::moe_gating_top_k_meta);
     // Add_Rms_Norm_Bias
     ops.impl("npu_add_rms_norm_bias", &vllm_ascend::meta::npu_add_rms_norm_bias_meta);
     // transpose_kv_cache_by_block
@@ -616,6 +615,11 @@ TORCH_LIBRARY_IMPL_EXPAND(CONCAT(_C, _ascend), Meta, ops) {
     ops.impl("npu_causal_conv1d_custom", &vllm_ascend::meta::npu_causal_conv1d_custom_meta);
     // moe_grouped_matmul
     ops.impl("moe_grouped_matmul", &vllm_ascend::meta::moe_grouped_matmul_meta);
+    // Lightning indexer quant
+    ops.impl("npu_lightning_indexer_quant", &vllm_ascend::meta::npu_lightning_indexer_quant_meta);
+#endif // ASCEND_PLATFORM_950
+    // Moe_gating_top_k
+    ops.impl("moe_gating_top_k", &vllm_ascend::meta::moe_gating_top_k_meta);
     // Lightning indexer quant
     ops.impl("npu_lightning_indexer_quant", &vllm_ascend::meta::npu_lightning_indexer_quant_meta);
 }
